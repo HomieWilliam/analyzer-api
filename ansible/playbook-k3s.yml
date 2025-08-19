@@ -1,0 +1,19 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Instalar dependências
+      apt:
+        name: [curl, apt-transport-https]
+        state: present
+        update_cache: yes
+
+    - name: Instalar K3s
+      shell: curl -sfL https://get.k3s.io | sh -
+      args:
+        executable: /bin/bash
+
+    - name: Deploy do container
+      shell: |
+        docker run -d -p 8080:8080 ${{ secrets.DOCKER_REGISTRY }}/analyzer-api:latest
+      args:
+        executable: /bin/bash
