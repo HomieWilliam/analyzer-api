@@ -1,7 +1,7 @@
 package services
  
 import (
-    "./models"
+    "github.com/HomieWilliam/analyzer-api/models"
     "reflect"
     "testing"
 )

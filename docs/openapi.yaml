@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: Phrase Analyzer API
+  description: API que analisa uma frase e retorna a contagem de palavras, vogais e consoantes.
+  version: 1.0.0
+ 
+servers:
+  - url: http://localhost:8080
+    description: Servidor local de desenvolvimento
+ 
+paths:
+  /api/v1/analyze:
+    post:
+      summary: Analisar uma frase
+      description: Recebe uma frase e retorna o número de palavras, vogais e consoantes.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyzerRequest'
+            example:
+              phrase: "Hello World"
+      responses:
+        '200':
+          description: Resultado da análise
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzerResponse'
+              example:
+                words: 2
+                vowels: 3
+                consonants: 7
+        '400':
+          description: Erro de validação na entrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "invalid character '}' looking for beginning of object key string"
+ 
+components:
+  schemas:
+    AnalyzerRequest:
+      type: object
+      required:
+        - phrase
+      properties:
+        phrase:
+          type: string
+          description: Frase a ser analisada
+          example: "Eu sou incrível"
+    AnalyzerResponse:
+      type: object
+      properties:
+        words:
+          type: integer
+          description: Quantidade de palavras na frase
+          example: 3
+        vowels:
+          type: integer
+          description: Quantidade de vogais na frase
+          example: 7
+        consonants:
+          type: integer
+          description: Quantidade de consoantes na frase
+          example: 11
