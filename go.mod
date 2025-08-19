@@ -1,6 +1,6 @@
 module github.com/HomieWilliam/analyzer-api
 
-go 1.25.0
+go 1.23.0
 
 require github.com/gin-gonic/gin v1.10.1
 
@@ -31,4 +31,3 @@ require (
 	google.golang.org/protobuf v1.36.7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
