@@ -1,13 +1,17 @@
 package config
- 
-import (
-    "os"
-)
- 
-func GetPort() string {
+
+import "os"
+
+type Config struct {
+    ServerPort string
+}
+
+func LoadConfig() Config {
     port := os.Getenv("PORT")
     if port == "" {
-        port = "8080" // padrão
+        port = ":8080"
     }
-    return port
+    return Config{
+        ServerPort: port,
+    }
 }

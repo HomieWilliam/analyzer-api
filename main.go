@@ -7,8 +7,15 @@ import (
 )
 
 func main() {
+      // Carrega configuração
+    cfg := config.LoadConfig() 
+
+    // Cria servidor Gin
     r := gin.Default()
+
+    // Registra rotas
     routes.RegisterRoutes(r)
-    port := config.GetPort()
-    r.Run(":" + port)
+
+    // Executa servidor na porta configurada
+    r.Run(cfg.ServerPort)
 }

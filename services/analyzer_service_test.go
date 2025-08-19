@@ -26,8 +26,8 @@ func TestAnalyze(t *testing.T) {
             input: "Go é uma linguagem poderosa",
             output: models.AnalyzerResponse{
                 Words:      5,
-                Vowels:     11,
-                Consonants: 12,
+                Vowels:     12,
+                Consonants: 11,
             },
         },
         {
