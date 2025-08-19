@@ -2,8 +2,7 @@ package controllers
  
 import (
     "github.com/gin-gonic/gin"
-    "analyzer-api/models"
-    "analyzer-api/services"
+    "github.com/HomieWilliam/analyzer-api/services"
     "net/http"
 )
  

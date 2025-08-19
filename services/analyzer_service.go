@@ -1,7 +1,7 @@
 package services
  
 import (
-    "analyzer-api/models"
+    "github.com/HomieWilliam/analyzer-api/models"
     "strings"
     "unicode"
 )
