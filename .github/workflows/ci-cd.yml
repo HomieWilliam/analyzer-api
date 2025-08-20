@@ -85,9 +85,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Ansible
-        run: sudo apt update && sudo apt install -y ansible
+        run: sudo yum install -y ansible
 
-      - name: Run Ansible Playbook
+      - name: Run Ansible Playbook (Amazon Linux)
         run: ansible-playbook ansible/playbook-k3s.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
