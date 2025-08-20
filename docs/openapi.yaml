@@ -1,18 +1,54 @@
 openapi: 3.0.3
 info:
   title: Phrase Analyzer API
-  description: API que analisa uma frase e retorna a contagem de palavras, vogais e consoantes.
-  version: 1.0.0
- 
+  description: API que analisa uma frase e retorna a contagem de palavras, vogais e consoantes. Inclui autenticação via JWT.
+  version: 1.1.0
+
 servers:
   - url: http://localhost:8080
     description: Servidor local de desenvolvimento
- 
+
 paths:
+  /api/v1/login:
+    post:
+      summary: Autenticação
+      description: Recebe username e password e retorna um token JWT.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              username: "admin"
+              password: "admin123"
+      responses:
+        '200':
+          description: Token JWT retornado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Usuário ou senha inválidos"
+
   /api/v1/analyze:
     post:
       summary: Analisar uma frase
-      description: Recebe uma frase e retorna o número de palavras, vogais e consoantes.
+      description: Recebe uma frase e retorna o número de palavras, vogais e consoantes. Requer JWT no header Authorization.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -43,9 +79,41 @@ paths:
                     type: string
               example:
                 error: "invalid character '}' looking for beginning of object key string"
- 
+        '401':
+          description: Não autorizado / JWT inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Token inválido ou expirado"
+
 components:
   schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Nome de usuário
+          example: "admin"
+        password:
+          type: string
+          description: Senha do usuário
+          example: "admin123"
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT para autenticação nas rotas protegidas
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     AnalyzerRequest:
       type: object
       required:
@@ -70,3 +138,8 @@ components:
           type: integer
           description: Quantidade de consoantes na frase
           example: 11
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

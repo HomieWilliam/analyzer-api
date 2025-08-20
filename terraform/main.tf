@@ -6,6 +6,12 @@ variable "docker_registry" {
   type = string
 }
 
+variable "jwt_secret" {
+  type = string
+  description = "Chave secreta para JWT"
+  sensitive = true
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical
@@ -27,7 +33,10 @@ resource "aws_instance" "app_server" {
               apt-get install -y docker.io
               systemctl enable docker
               systemctl start docker
-              docker run -d -p 8080:8080 ${var.docker_registry}/analyzer-api:latest
+
+              export JWT_SECRET="${var.jwt_secret}"
+
+              docker run -d -p 8080:8080 -e JWT_SECRET=${var.jwt_secret} ${var.docker_registry}/analyzer-api:latest
               EOF
 
   tags = {

@@ -9,6 +9,8 @@ COPY . .
 
 RUN go build -o analyzer-api main.go
 
+ENV ENV JWT_SECRET=${JWT_SECRET}
+
 EXPOSE 8080
 
 CMD ["./analyzer-api"]
