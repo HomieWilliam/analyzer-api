@@ -1,14 +1,22 @@
 - hosts: all
   become: true
   tasks:
-    - name: Instalar dependências
-      apt:
-        name: [curl, apt-transport-https, docker.io]
+    - name: Instalar dependências básicas
+      yum:
+        name:
+          - curl
+          - yum-utils
+          - git
         state: present
         update_cache: yes
 
+    - name: Instalar Docker
+      yum:
+        name: docker
+        state: present
+
     - name: Garantir que o Docker está ativo
-      systemd:
+      service:
         name: docker
         state: started
         enabled: yes
@@ -25,14 +33,14 @@
       args:
         executable: /bin/bash
 
-    - name: Deploy do container
+    - name: Pull e executar container Go
       shell: |
         docker pull ${{ secrets.DOCKER_REGISTRY }}/analyzer-api:latest
         docker run -d -p 8080:8080 --name analyzer-api ${{ secrets.DOCKER_REGISTRY }}/analyzer-api:latest
       args:
         executable: /bin/bash
 
-    - name: Health Check da aplicação
+    - name: Health check da aplicação
       shell: |
         for i in {1..5}; do
           curl -f http://localhost:8080/health && exit 0 || sleep 5
