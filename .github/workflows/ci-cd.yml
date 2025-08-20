@@ -84,10 +84,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Instala Ansible no runner Ubuntu
       - name: Install Ansible
-        run: sudo yum install -y ansible
+        run: sudo apt update && sudo apt install -y ansible
 
-      - name: Run Ansible Playbook (Amazon Linux)
+      # Executa o playbook Ansible na instância EC2
+      - name: Run Ansible Playbook
         run: ansible-playbook ansible/playbook-k3s.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
