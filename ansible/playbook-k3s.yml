@@ -3,17 +3,40 @@
   tasks:
     - name: Instalar dependências
       apt:
-        name: [curl, apt-transport-https]
+        name: [curl, apt-transport-https, docker.io]
         state: present
         update_cache: yes
+
+    - name: Garantir que o Docker está ativo
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
 
     - name: Instalar K3s
       shell: curl -sfL https://get.k3s.io | sh -
       args:
         executable: /bin/bash
 
+    - name: Parar container existente (se houver)
+      shell: |
+        docker stop analyzer-api || true
+        docker rm analyzer-api || true
+      args:
+        executable: /bin/bash
+
     - name: Deploy do container
       shell: |
-        docker run -d -p 8080:8080 ${{ secrets.DOCKER_REGISTRY }}/analyzer-api:latest
+        docker pull ${{ secrets.DOCKER_REGISTRY }}/analyzer-api:latest
+        docker run -d -p 8080:8080 --name analyzer-api ${{ secrets.DOCKER_REGISTRY }}/analyzer-api:latest
+      args:
+        executable: /bin/bash
+
+    - name: Health Check da aplicação
+      shell: |
+        for i in {1..5}; do
+          curl -f http://localhost:8080/health && exit 0 || sleep 5
+        done
+        exit 1
       args:
         executable: /bin/bash
