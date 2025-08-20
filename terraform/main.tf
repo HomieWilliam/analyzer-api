@@ -2,6 +2,10 @@ provider "aws" {
   region = "eu-north-1"
 }
 
+variable "docker_registry" {
+  type = string
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical
@@ -23,7 +27,7 @@ resource "aws_instance" "app_server" {
               apt-get install -y docker.io
               systemctl enable docker
               systemctl start docker
-              docker run -d -p 8080:8080 ${DOCKER_REGISTRY}/analyzer-api:latest
+              docker run -d -p 8080:8080 ${var.docker_registry}/analyzer-api:latest
               EOF
 
   tags = {
