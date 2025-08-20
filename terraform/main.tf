@@ -13,7 +13,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_instance" "app_server" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.nano"  # Tipo mínimo para não ultrapassar limite de vCPUs
+  instance_type = "t3.nano"  # Tipo seguro para não ultrapassar limite de vCPUs
   key_name      = "analyzer-api-key"
 
   tags = {
