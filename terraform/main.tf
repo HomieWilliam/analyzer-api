@@ -13,10 +13,28 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_instance" "app_server" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.nano"  # Tipo seguro para não ultrapassar limite de vCPUs
+  instance_type = "t3.nano"
   key_name      = "analyzer-api-key"
 
   tags = {
     Name = "analyzer-api"
+  }
+
+  # Conectar e instalar Docker via SSH (sem recriar instância)
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update -y",
+      "sudo apt-get install -y docker.io",
+      "sudo systemctl enable docker",
+      "sudo systemctl start docker",
+      "sudo usermod -aG docker ubuntu"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("analyzer-api-key.pem")
+      host        = self.public_ip
+    }
   }
 }
