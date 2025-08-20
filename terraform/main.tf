@@ -4,7 +4,7 @@ provider "aws" {
 
 data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["099720109477"] # Canonical (Ubuntu)
+  owners      = ["099720109477"] # Canonical
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
@@ -16,25 +16,17 @@ resource "aws_instance" "app_server" {
   instance_type = "t3.nano"
   key_name      = "analyzer-api-key"
 
+  # User data para instalar Docker e rodar o container
+  user_data = <<-EOF
+              #!/bin/bash
+              apt-get update
+              apt-get install -y docker.io
+              systemctl enable docker
+              systemctl start docker
+              docker run -d -p 8080:8080 ${DOCKER_REGISTRY}/analyzer-api:latest
+              EOF
+
   tags = {
     Name = "analyzer-api"
-  }
-
-  # Conectar e instalar Docker via SSH (sem recriar instância)
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update -y",
-      "sudo apt-get install -y docker.io",
-      "sudo systemctl enable docker",
-      "sudo systemctl start docker",
-      "sudo usermod -aG docker ubuntu"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = file("analyzer-api-key.pem")
-      host        = self.public_ip
-    }
   }
 }
